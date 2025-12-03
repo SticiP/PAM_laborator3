@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-// Importuri Logic & Domain
 import '../logic/cubits/home_cubit.dart';
 import '../logic/cubits/home_state.dart';
 import '../../domain/entities/news_entity.dart';
 
-// Importuri UI Widgets (Asigură-te că acestea există și nu au erori)
 import '../widgets/icon_button_scale.dart';
 import '../widgets/trending_news_section.dart';
-import '../widgets/recomandation_section.dart'; // Ai grijă la numele folderului/fișierului (recomandation vs recommendation)
+import '../widgets/recomandation_section.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -19,21 +17,21 @@ class Home extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
-        // Ascultăm starea Cubit-ului
+        // Ascultam starea Cubit-ului
         child: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
 
-            // 1. ÎNCĂRCARE
+            // 1. Incarcarea
             if (state is HomeLoading) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // 2. EROARE
+            // 2. Eroare
             if (state is HomeError) {
               return Center(child: Text("Error: ${state.message}"));
             }
 
-            // 3. DATEL ÎNCĂRCATE (Aici construim UI-ul frumos)
+            // 3. Datele incarcate
             if (state is HomeLoaded) {
               final user = state.data.user;
               final trending = state.data.trendingNews;
@@ -50,12 +48,10 @@ class Home extends StatelessWidget {
                     _buildWelcomeSection(user.name),
                     const SizedBox(height: 24),
 
-                    // AICI ERA PROBLEMA: Acum folosim widget-ul real, nu Text-ul
                     TrendingNewsSection(items: trending),
 
                     const SizedBox(height: 32),
 
-                    // ȘI AICI: Folosim widget-ul real
                     RecommendationSection(items: recommendations),
 
                     const SizedBox(height: 24),
@@ -71,7 +67,6 @@ class Home extends StatelessWidget {
     );
   }
 
-  // --- Metode Ajutătoare ---
 
   Widget _buildHeader(String profileUrl) {
     return Row(

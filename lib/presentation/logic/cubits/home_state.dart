@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/repositories/news_repository.dart'; // Importam entitatea HomeDataEntity
+import '../../../../domain/repositories/news_repository.dart';
 
 // Clasa de baza abstracta
 abstract class HomeState extends Equatable {
@@ -25,7 +25,7 @@ class HomeLoaded extends HomeState {
   List<Object?> get props => [data]; // Important pentru comparatie
 }
 
-// Starea 4: Eroare (afisam mesaj)
+// Starea 4: Eroare
 class HomeError extends HomeState {
   final String message;
 

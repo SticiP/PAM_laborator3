@@ -11,7 +11,6 @@ class PublisherCubit extends Cubit<PublisherState> {
     emit(PublisherLoading());
     try {
       // Apelam functia din repository
-      // (Momentan id-ul e ignorat in mock, dar e bine sa il avem pentru viitor)
       final details = await repository.getPublisherDetails(id);
 
       emit(PublisherLoaded(details));
