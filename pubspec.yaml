@@ -73,19 +73,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/cardImage_1.png
-    - assets/images/cardImage_2.png
-    - assets/images/ProfilePic_1.png
-    - assets/images/ProfilePic_2.png
-    - assets/images/ProfilePic_3.png
-    - assets/images/ProfilePic_4.png
-    - assets/images/TrendingNewsImage_1.jpg
-    - assets/images/TrendingNewsImage_2.jpg
-    - assets/icons/back.svg
-    - assets/icons/bell.svg
-    - assets/icons/menu.svg
-    - assets/icons/square.svg
-    - assets/icons/three-dots.svg
+    - assets/images/
+    - assets/icons/
     - assets/data/
 
   # To add assets to your application, add an assets section, like this:

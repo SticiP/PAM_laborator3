@@ -1,11 +1,12 @@
-// lib/pages/profile_page.dart
+// lib/presentation/pages/profile_page.dart
 import 'package:flutter/material.dart';
-
-import '../widgets/icon_button_scale.dart';
+import '../widgets/custom_network_image.dart';
+import '../widgets/icon_button_scale.dart'; // Importul corect relativ la noul folder
 
 class ProfilePage extends StatefulWidget {
   final String sourceName;
   final String? sourceImagePath;
+  // Imaginea din interiorul cardului ramane asset momentan (static)
   final String cardImage = 'assets/images/cardImage_1.png';
 
   const ProfilePage({
@@ -33,7 +34,6 @@ class ProfilePageState extends State<ProfilePage> {
             children: [
               _buildHeader(),
               _buildProfileInfo(),
-              // _buildStatsSection(),
               _buildDescriptionSection(),
               _buildNewsSection(),
             ],
@@ -43,8 +43,6 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  //onPressed: () => Navigator.pop(context),
-
   Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
@@ -52,11 +50,9 @@ class ProfilePageState extends State<ProfilePage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButtonScale(
-            assetPath: 'assets/icons/back.svg',
+            assetPath: 'assets/icons/arrow-left.svg',
             onTap: () => Navigator.pop(context),
           ),
-
-          // Textul din mijloc — numele sursei
           Expanded(
             child: Text(
               widget.sourceName,
@@ -69,8 +65,6 @@ class ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-
-          // Butonul dreapta — fără logică momentan
           IconButtonScale(
             assetPath: 'assets/icons/bell.svg',
             onTap: () {
@@ -81,7 +75,6 @@ class ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-
 
   Widget _buildProfileInfo() {
     return Container(
@@ -97,7 +90,14 @@ class ProfilePageState extends State<ProfilePage> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: widget.sourceImagePath != null
-                ? Image.asset(widget.sourceImagePath!, fit: BoxFit.cover)
+            // MODIFICARE: Folosim NetworkImage pentru ca primim URL
+                ? ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: CustomNetworkImage(
+                imageUrl: widget.sourceImagePath!,
+                fit: BoxFit.cover,
+              ),
+            )
                 : Icon(Icons.image, size: 50, color: Colors.grey.shade600),
           ),
           const SizedBox(width: 28),
@@ -420,6 +420,8 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildNewsImage() {
+    // Aici ramane asset local momentan (pentru stirea statica)
+    // Daca nu ai imaginea asta in assets, schimba cu un Container colorat
     return Container(
       height: 198,
       width: double.infinity,
@@ -427,7 +429,11 @@ class ProfilePageState extends State<ProfilePage> {
         borderRadius: BorderRadius.circular(8),
         color: Colors.grey.shade300,
       ),
-      child: Image.asset(widget.cardImage, fit: BoxFit.cover),
+      child: Image.asset(
+        widget.cardImage,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+      ),
     );
   }
 }

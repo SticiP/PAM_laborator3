@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import '../models/recomandation_item.dart';
+import '../../domain/entities/news_entity.dart';
 import 'recommendation_card.dart';
 
 class RecommendationSection extends StatelessWidget {
-  final List<RecommendationItem> items;
+  final List<NewsEntity> items; // Lista de entitati
   final VoidCallback? onSeeAll;
-  final double verticalSpacing;
 
   const RecommendationSection({
     super.key,
     required this.items,
     this.onSeeAll,
-    this.verticalSpacing = 16.0,
   });
 
   @override
@@ -19,7 +17,6 @@ class RecommendationSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -45,21 +42,14 @@ class RecommendationSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // Lista verticală de carduri
+        // Lista verticala
         Column(
           children: List.generate(items.length, (index) {
             final item = items[index];
             return Padding(
-              padding: EdgeInsets.only(
-                  bottom: index == items.length - 1 ? 0 : verticalSpacing),
-              child: RecommendationCard(
-                profileImagePath: item.profileImagePath,
-                sourceName: item.sourceName,
-                date: item.date,
-                title: item.title,
-                cardImagePath: item.cardImagePath,
-                onFollow: item.onFollow,
-              ),
+              padding: const EdgeInsets.only(bottom: 16.0),
+              // Acum RecommendationCard stie sa primeasca NewsEntity
+              child: RecommendationCard(item: item),
             );
           }),
         ),
