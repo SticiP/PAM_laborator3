@@ -25,14 +25,16 @@
         "category": "Business",
         "date": "Jun 11, 2023",
         "publisher": "Forbes",
-        "publisher_verified": true,
+        "publisher_icon": "https://cdn.worldvectorlogo.com/logos/forbes-2.svg",
+        "is_verified": true,
         "image": "https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg",
         "stats": {
           "likes": 1240,
           "comments": 98,
           "shares": 56
         },
-        "is_bookmarked": false
+        "is_bookmarked": false,
+        "is_following": false
       },
       {
         "id": 302,
@@ -40,14 +42,16 @@
         "category": "Finance",
         "date": "Jun 10, 2023",
         "publisher": "Forbes",
-        "publisher_verified": true,
+        "publisher_icon": "https://cdn.worldvectorlogo.com/logos/forbes-2.svg",
+        "is_verified": true,
         "image": "https://cdn.pixabay.com/photo/2018/02/08/10/22/desk-3139127_1280.jpg",
         "stats": {
           "likes": 980,
           "comments": 76,
           "shares": 40
         },
-        "is_bookmarked": true
+        "is_bookmarked": true,
+        "is_following": false
       }
     ]
   }

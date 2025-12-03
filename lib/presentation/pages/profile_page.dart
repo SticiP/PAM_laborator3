@@ -1,13 +1,20 @@
-// lib/presentation/pages/profile_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+// Importuri necesare
+import '../logic/cubits/publisher_cubit.dart';
+import '../logic/cubits/publisher_state.dart';
+import '../../domain/entities/publisher_details_entity.dart';
+import '../../domain/entities/news_entity.dart';
+
+import '../widgets/icon_button_scale.dart';
 import '../widgets/custom_network_image.dart';
-import '../widgets/icon_button_scale.dart'; // Importul corect relativ la noul folder
+import '../widgets/recommendation_card.dart'; // Reutilizam cardul pentru lista de stiri
 
 class ProfilePage extends StatefulWidget {
+  // Pastram constructorul, dar il vom folosi doar pentru titlu initial
   final String sourceName;
   final String? sourceImagePath;
-  // Imaginea din interiorul cardului ramane asset momentan (static)
-  final String cardImage = 'assets/images/cardImage_1.png';
 
   const ProfilePage({
     super.key,
@@ -20,30 +27,61 @@ class ProfilePage extends StatefulWidget {
 }
 
 class ProfilePageState extends State<ProfilePage> {
-  String searchQuery = '';
-  bool isFollowing = false;
+  // Nu mai avem nevoie de variabile locale hardcodate
+  // String searchQuery = '';
+  // bool isFollowing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // AICI declansam incarcarea datelor cand se deschide pagina
+    // "123" este un ID fictiv, json-ul nostru returneaza aceleasi date oricum
+    context.read<PublisherCubit>().loadPublisherDetails("123");
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              _buildProfileInfo(),
-              _buildDescriptionSection(),
-              _buildNewsSection(),
-            ],
-          ),
+        // Ascultam Cubit-ul
+        child: BlocBuilder<PublisherCubit, PublisherState>(
+          builder: (context, state) {
+
+            if (state is PublisherLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is PublisherError) {
+              return Center(child: Text(state.message));
+            }
+
+            if (state is PublisherLoaded) {
+              final info = state.details.publisher;
+              final newsList = state.details.news;
+
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(info.username), // Folosim username din JSON
+                    _buildProfileInfo(info),
+                    _buildDescriptionSection(info.name, info.bio, info.isVerified),
+                    _buildNewsSection(info.name, newsList),
+                  ],
+                ),
+              );
+            }
+
+            // Starea initiala (sau loading rapid)
+            return const Center(child: CircularProgressIndicator());
+          },
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       child: Row(
@@ -55,7 +93,7 @@ class ProfilePageState extends State<ProfilePage> {
           ),
           Expanded(
             child: Text(
-              widget.sourceName,
+              title,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -66,22 +104,21 @@ class ProfilePageState extends State<ProfilePage> {
             ),
           ),
           IconButtonScale(
-            assetPath: 'assets/icons/bell.svg',
-            onTap: () {
-              print("Right icon tapped");
-            },
+            assetPath: 'assets/icons/grid-large.svg',
+            onTap: () {},
           ),
         ],
       ),
     );
   }
 
-  Widget _buildProfileInfo() {
+  Widget _buildProfileInfo(PublisherInfoEntity info) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // LOGO
           Container(
             width: 108,
             height: 108,
@@ -89,41 +126,36 @@ class ProfilePageState extends State<ProfilePage> {
               color: Colors.grey.shade300,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: widget.sourceImagePath != null
-            // MODIFICARE: Folosim NetworkImage pentru ca primim URL
-                ? ClipRRect(
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: CustomNetworkImage(
-                imageUrl: widget.sourceImagePath!,
+                imageUrl: info.logo,
                 fit: BoxFit.cover,
               ),
-            )
-                : Icon(Icons.image, size: 50, color: Colors.grey.shade600),
+            ),
           ),
           const SizedBox(width: 28),
+
+          // STATISTICI
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatsRow(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildStatItem(info.stats.newsCount, "News"),
+                    _buildStatItem(info.stats.followers, "Followers"),
+                    _buildStatItem(info.stats.following.toString(), "Following"),
+                  ],
+                ),
                 const SizedBox(height: 20),
-                _buildFollowButton(),
+                _buildFollowButton(info.isFollowing),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStatsRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildStatItem("6.8k", "News"),
-        _buildStatItem("2.5k", "Followers"),
-        _buildStatItem("100", "Following"),
-      ],
     );
   }
 
@@ -150,12 +182,11 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildFollowButton() {
+  Widget _buildFollowButton(bool isFollowing) {
     return InkWell(
       onTap: () {
-        setState(() {
-          isFollowing = !isFollowing;
-        });
+        // Aici ar trebui sa apelam un event in Cubit pentru Follow/Unfollow
+        // Momentan doar vizual
       },
       child: Container(
         decoration: BoxDecoration(
@@ -177,7 +208,7 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildDescriptionSection() {
+  Widget _buildDescriptionSection(String name, String bio, bool isVerified) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       child: Column(
@@ -186,25 +217,23 @@ class ProfilePageState extends State<ProfilePage> {
           Row(
             children: [
               Text(
-                widget.sourceName,
+                name,
                 style: const TextStyle(
                   color: Color(0xFF191919),
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 9),
-              const Icon(
-                Icons.verified,
-                color: Colors.blueAccent,
-                size: 20,
-              ),
+              if (isVerified) ...[
+                const SizedBox(width: 9),
+                const Icon(Icons.verified, color: Colors.blueAccent, size: 20),
+              ],
             ],
           ),
           const SizedBox(height: 9),
-          const Text(
-            "Empowering your business journey with expert insights and influential perspectives.",
-            style: TextStyle(
+          Text(
+            bio,
+            style: const TextStyle(
               color: Color(0xFF666666),
               fontSize: 16,
             ),
@@ -214,225 +243,34 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildNewsSection() {
+  Widget _buildNewsSection(String name, List<NewsEntity> news) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 21),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildNewsSectionHeader(),
-          const SizedBox(height: 24),
-          _buildSearchBar(),
-          const SizedBox(height: 24),
-          _buildNewsCard(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNewsSectionHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "News by ${widget.sourceName}",
-          style: const TextStyle(
-            color: Color(0xFF191919),
-            fontSize: 20,
-          ),
-        ),
-        const SizedBox(height: 9),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                const Text(
-                  "Sort by: Newest",
-                  style: TextStyle(
-                    color: Color(0xFF999999),
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
-              ],
-            ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.grid_view, size: 24),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.list, size: 24),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: const Color(0x4DD9EEF9),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-      child: Row(
-        children: [
-          const Icon(Icons.search, color: Colors.grey, size: 20),
-          const SizedBox(width: 20),
-          Expanded(
-            child: TextField(
-              style: const TextStyle(
-                color: Color(0xFF666666),
-                fontSize: 18,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
-              },
-              decoration: const InputDecoration(
-                hintText: "Search \"News\"",
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-                border: InputBorder.none,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNewsCard() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: const Color(0xFFF9FCFE),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildNewsCardHeader(),
-          const SizedBox(height: 16),
-          const Text(
-            "Tech Startup Secures \$50 Million Funding for Expansion",
-            style: TextStyle(
+          Text(
+            "News by $name",
+            style: const TextStyle(
               color: Color(0xFF191919),
               fontSize: 20,
-              fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
-          _buildCategoryTag(),
-          const SizedBox(height: 16),
-          _buildNewsImage(),
+          const SizedBox(height: 24),
+
+          // Lista de știri reale din JSON
+          ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: news.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: RecommendationCard(item: news[index]),
+              );
+            },
+          )
         ],
-      ),
-    );
-  }
-
-  Widget _buildNewsCardHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.account_circle, size: 30),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      widget.sourceName,
-                      style: const TextStyle(
-                        color: Color(0xFF999999),
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.verified,
-                      color: Colors.blueAccent,
-                      size: 16,
-                    ),
-                  ],
-                ),
-                const Text(
-                  "Jun 11, 2023",
-                  style: TextStyle(
-                    color: Color(0xFF999999),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.more_vert, size: 24),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCategoryTag() {
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: const Color(0xFF2ABAFF),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: const Text(
-          "Business",
-          style: TextStyle(
-            color: Color(0xFF2ABAFF),
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNewsImage() {
-    // Aici ramane asset local momentan (pentru stirea statica)
-    // Daca nu ai imaginea asta in assets, schimba cu un Container colorat
-    return Container(
-      height: 198,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.grey.shade300,
-      ),
-      child: Image.asset(
-        widget.cardImage,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
       ),
     );
   }

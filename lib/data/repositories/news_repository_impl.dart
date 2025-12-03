@@ -1,6 +1,9 @@
 // lib/data/repositories/news_repository_impl.dart
+import 'package:news_app/domain/entities/publisher_details_entity.dart';
+
 import '../../domain/repositories/news_repository.dart';
 import '../datasources/local_news_datasource.dart';
+import '../models/publisher_details_model.dart';
 import '../models/user_model.dart';
 import '../models/news_model.dart';
 
@@ -35,5 +38,17 @@ class NewsRepositoryImpl implements NewsRepository {
       trendingNews: trendingList,
       recommendations: recommendationList,
     );
+  }
+
+  @override
+  Future<PublisherDetailsEntity> getPublisherDetails(String id) async {
+    // 1. Citim Map-ul brut din DataSource
+    final jsonMap = await dataSource.loadPublisherDetails();
+
+    // 2. Extragem obiectul principal din JSON ("news_app_details")
+    final detailsData = jsonMap['news_app_details'];
+
+    // 3. Convertim JSON -> Model -> Entitate
+    return PublisherDetailsModel.fromJson(detailsData);
   }
 }

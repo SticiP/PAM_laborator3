@@ -1,36 +1,40 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-// Importurile noastre din Clean Architecture
 import 'data/datasources/local_news_datasource.dart';
 import 'data/repositories/news_repository_impl.dart';
+import 'domain/repositories/news_repository.dart'; // Importa interfata
 import 'presentation/logic/cubits/home_cubit.dart';
-import 'presentation/pages/home.dart'; // Asigură-te că calea e corectă
+import 'presentation/pages/home.dart';
 
 void main() {
-  // 1. Initializam "dependenta" de baza (Sursa de date)
   final dataSource = LocalNewsDataSource();
-
-  // 2. Initializam Repository-ul cu sursa de date
   final repository = NewsRepositoryImpl(dataSource: dataSource);
 
-  runApp(MyApp(repository: repository));
+  runApp(
+    // 1. Injectam Repository-ul GLOBAL
+    RepositoryProvider<NewsRepository>(
+      create: (context) => repository,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  final NewsRepositoryImpl repository;
-
-  const MyApp({super.key, required this.repository});
+  // Nu mai avem nevoie sa trecem repository prin constructor
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'News App Lab 3',
-      // 3. Injectam Cubit-ul folosind BlocProvider
-      // "..loadHomeData()" porneste incarcarea imediat ce se creaza Cubit-ul
+      title: 'News App',
+      // 2. HomeCubit isi ia acum repository-ul direct din contextul global
       home: BlocProvider(
-        create: (context) => HomeCubit(repository: repository)..loadHomeData(),
+        create: (context) => HomeCubit(
+          repository: context.read<NewsRepository>(),
+        )..loadHomeData(),
         child: const Home(),
       ),
     );

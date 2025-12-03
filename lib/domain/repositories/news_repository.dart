@@ -1,5 +1,6 @@
 // lib/domain/repositories/news_repository.dart
 import '../entities/news_entity.dart';
+import '../entities/publisher_details_entity.dart';
 import '../entities/user_entity.dart';
 
 // O clasă simplă care grupează tot ce avem nevoie pentru Home Page
@@ -20,6 +21,6 @@ abstract class NewsRepository {
   // Metoda care va returna toate datele pentru Home Page
   Future<HomeDataEntity> getHomeData();
 
-// Pe viitor, pentru Lab 3 (partea 2) - Detalii Publisher
-// Future<PublisherDetailsEntity> getPublisherDetails(String id);
+  // Pe viitor, pentru Lab 3 (partea 2) - Detalii Publisher
+  Future<PublisherDetailsEntity> getPublisherDetails(String id);
 }

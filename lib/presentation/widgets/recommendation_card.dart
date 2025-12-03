@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/news_entity.dart';
+import '../../domain/repositories/news_repository.dart';
+import '../logic/cubits/home_cubit.dart';
+import '../logic/cubits/publisher_cubit.dart';
 import '../pages/profile_page.dart';
 import 'custom_network_image.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecommendationCard extends StatelessWidget {
-  // Primim direct entitatea
   final NewsEntity item;
   final VoidCallback? onFollow;
 
@@ -15,12 +18,20 @@ class RecommendationCard extends StatelessWidget {
   });
 
   void _openProfile(BuildContext context) {
+    // MODIFICARE: Cerem Repository-ul Global
+    final repo = context.read<NewsRepository>();
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ProfilePage(
+        builder: (_) => BlocProvider(
+          create: (context) => PublisherCubit(
+            repository: repo,
+          ),
+          child: ProfilePage(
             sourceName: item.publisher,
-            sourceImagePath: item.publisherIcon
+            sourceImagePath: item.publisherIcon,
+          ),
         ),
       ),
     );

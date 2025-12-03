@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/news_entity.dart';
+import '../../domain/repositories/news_repository.dart';
+import '../logic/cubits/home_cubit.dart';
+import '../logic/cubits/publisher_cubit.dart';
 import '../pages/profile_page.dart';
 import 'custom_network_image.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TrendingNewsSection extends StatelessWidget {
 
@@ -71,12 +75,21 @@ class NewsCard extends StatelessWidget {
   const NewsCard({Key? key, required this.item}) : super(key: key);
 
   void _openProfile(BuildContext context) {
+    // MODIFICARE: Cerem direct Repository-ul Global
+    // (Merge oriunde: si in Home, si in Profile, si in alte pagini)
+    final repo = context.read<NewsRepository>();
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          sourceName: item.publisher,
-          sourceImagePath: item.publisherIcon,
+        builder: (_) => BlocProvider(
+          create: (context) => PublisherCubit(
+            repository: repo,
+          ),
+          child: ProfilePage(
+            sourceName: item.publisher,
+            sourceImagePath: item.publisherIcon,
+          ),
         ),
       ),
     );
