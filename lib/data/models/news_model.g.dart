@@ -11,7 +11,9 @@ NewsModel _$NewsModelFromJson(Map<String, dynamic> json) => NewsModel(
   category: json['category'] as String,
   title: json['title'] as String,
   publisher: json['publisher'] as String,
-  publisherIcon: json['publisher_icon'] as String,
+  publisherIcon:
+      json['publisher_icon'] as String? ??
+      'https://cdn-icons-png.flaticon.com/512/149/149071.png',
   image: json['image'] as String,
   date: json['date'] as String,
   isVerified: json['is_verified'] as bool? ?? false,

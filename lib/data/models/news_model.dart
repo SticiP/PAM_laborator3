@@ -11,7 +11,13 @@ class NewsModel extends NewsEntity {
     required String category,
     required String title,
     required String publisher,
-    @JsonKey(name: 'publisher_icon') required String publisherIcon,
+
+    // --- MODIFICARE AICI ---
+    // API-ul de detalii nu trimite iconita, asa ca punem una default (un cerc gri sau o imagine de placeholder)
+    @JsonKey(name: 'publisher_icon', defaultValue: 'https://cdn-icons-png.flaticon.com/512/149/149071.png')
+    required String publisherIcon,
+    // -----------------------
+
     required String image,
     required String date,
     @JsonKey(name: 'is_verified') bool isVerified = false,
