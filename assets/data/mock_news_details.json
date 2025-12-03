@@ -1,58 +1,60 @@
 {
-  "news_app_details": {
-    "publisher": {
-      "username": "forbesnews",
-      "name": "Forbes",
-      "verified": true,
-      "logo": "https://cdn.worldvectorlogo.com/logos/forbes-2.svg",
-      "bio": "Empowering your business journey with expert insights and influential perspectives.",
+  "publisher": {
+    "username": "forbesnews",
+    "name": "Forbes",
+    "verified": true,
+    "logo": "https://cdn.worldvectorlogo.com/logos/forbes-2.svg",
+    "bio": "Empowering your business journey with expert insights and influential perspectives.",
+    "stats": {
+      "news_count": "6.8k",
+      "followers": "2.5k",
+      "following": 100
+    },
+    "is_following": false
+  },
+  "filters": {
+    "sort_by": [
+      "Newest",
+      "Oldest",
+      "Most Popular"
+    ],
+    "active_sort": "Newest",
+    "view_mode": "list"
+  },
+  "news": [
+    {
+      "id": 301,
+      "title": "Tech Startup Secures $50 Million Funding for Expansion",
+      "category": "Business",
+      "date": "Jun 11, 2023",
+      "publisher": "Forbes",
+      "publisher_icon": "https://cdn.worldvectorlogo.com/logos/forbes-2.svg",
+      "is_verified": true,
+      "image": "https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg",
       "stats": {
-        "news_count": "6.8k",
-        "followers": "2.5k",
-        "following": 100
+        "likes": 1240,
+        "comments": 98,
+        "shares": 56
       },
+      "is_bookmarked": false,
       "is_following": false
     },
-    "filters": {
-      "sort_by": ["Newest", "Oldest", "Most Popular"],
-      "active_sort": "Newest",
-      "view_mode": "list"
-    },
-    "news": [
-      {
-        "id": 301,
-        "title": "Tech Startup Secures $50 Million Funding for Expansion",
-        "category": "Business",
-        "date": "Jun 11, 2023",
-        "publisher": "Forbes",
-        "publisher_icon": "https://cdn.worldvectorlogo.com/logos/forbes-2.svg",
-        "is_verified": true,
-        "image": "https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg",
-        "stats": {
-          "likes": 1240,
-          "comments": 98,
-          "shares": 56
-        },
-        "is_bookmarked": false,
-        "is_following": false
+    {
+      "id": 302,
+      "title": "Global CEOs Predict Market Growth in 2024",
+      "category": "Finance",
+      "date": "Jun 10, 2023",
+      "publisher": "Forbes",
+      "publisher_icon": "https://cdn.worldvectorlogo.com/logos/forbes-2.svg",
+      "is_verified": true,
+      "image": "https://cdn.pixabay.com/photo/2018/02/08/10/22/desk-3139127_1280.jpg",
+      "stats": {
+        "likes": 980,
+        "comments": 76,
+        "shares": 40
       },
-      {
-        "id": 302,
-        "title": "Global CEOs Predict Market Growth in 2024",
-        "category": "Finance",
-        "date": "Jun 10, 2023",
-        "publisher": "Forbes",
-        "publisher_icon": "https://cdn.worldvectorlogo.com/logos/forbes-2.svg",
-        "is_verified": true,
-        "image": "https://cdn.pixabay.com/photo/2018/02/08/10/22/desk-3139127_1280.jpg",
-        "stats": {
-          "likes": 980,
-          "comments": 76,
-          "shares": 40
-        },
-        "is_bookmarked": true,
-        "is_following": false
-      }
-    ]
-  }
+      "is_bookmarked": true,
+      "is_following": false
+    }
+  ]
 }

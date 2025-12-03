@@ -14,25 +14,21 @@ class NewsRepositoryImpl implements NewsRepository {
 
   @override
   Future<HomeDataEntity> getHomeData() async {
-    // 1. Luam JSON-ul brut
+    // 1. Luam JSON-ul brut (Map<String, dynamic>)
     final jsonMap = await dataSource.loadNewsData();
 
-    // 2. Accesam cheia principala din JSON-ul tau ("news_app")
-    final data = jsonMap['news_app'];
+    // 2. Convertim User-ul
+    final user = UserModel.fromJson(jsonMap['user']);
 
-    // 3. Convertim User-ul
-    final user = UserModel.fromJson(data['user']);
-
-    // 4. Convertim listele. Folosim .map() pentru a transforma fiecare element JSON in Model
-    final trendingList = (data['trending_news'] as List)
+    // 3. Convertim listele
+    final trendingList = (jsonMap['trending_news'] as List)
         .map((e) => NewsModel.fromJson(e))
         .toList();
 
-    final recommendationList = (data['recommendations'] as List)
+    final recommendationList = (jsonMap['recommendations'] as List)
         .map((e) => NewsModel.fromJson(e))
         .toList();
 
-    // 5. Returnam pachetul complet sub forma de Entitate de Domeniu
     return HomeDataEntity(
       user: user,
       trendingNews: trendingList,
@@ -45,10 +41,7 @@ class NewsRepositoryImpl implements NewsRepository {
     // 1. Citim Map-ul brut din DataSource
     final jsonMap = await dataSource.loadPublisherDetails();
 
-    // 2. Extragem obiectul principal din JSON ("news_app_details")
-    final detailsData = jsonMap['news_app_details'];
-
-    // 3. Convertim JSON -> Model -> Entitate
-    return PublisherDetailsModel.fromJson(detailsData);
+    // 2. Convertim direct jsonMap-ul
+    return PublisherDetailsModel.fromJson(jsonMap);
   }
 }
